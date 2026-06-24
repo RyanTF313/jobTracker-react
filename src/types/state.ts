@@ -7,5 +7,6 @@ export interface AuthState {
 
 export interface AppState {
   jobs: Job[];
+  filteredJobs: Job[];
   auth: AuthState;
 }
