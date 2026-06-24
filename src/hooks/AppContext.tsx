@@ -10,7 +10,7 @@ const AUTH_KEY = "jobTracker_auth";
 const initialState: AppState = {
   jobs: [],
   filteredJobs: [],
-  auth: { isLoggedIn: false, user: null },
+  auth: { isLoggedIn: false, user: null, isReturning: false },
 };
 
 function loadJobsFromStorage(): Job[] {
@@ -25,7 +25,7 @@ function loadJobsFromStorage(): Job[] {
 }
 
 function loadAuthFromStorage(): AuthState {
-  const fallback: AuthState = { isLoggedIn: false, user: null };
+  const fallback: AuthState = { isLoggedIn: false, user: null, isReturning: false };
   try {
     const raw = sessionStorage.getItem(AUTH_KEY);
     if (!raw) return fallback;
@@ -37,7 +37,13 @@ function loadAuthFromStorage(): AuthState {
     ) {
       return fallback;
     }
-    return parsed as AuthState;
+    const auth = parsed as AuthState;
+    if (auth.isLoggedIn && auth.user) {
+      const knownRaw = localStorage.getItem("jobTracker_known_users");
+      const known: string[] = knownRaw ? (JSON.parse(knownRaw) as string[]) : [];
+      auth.isReturning = known.includes(auth.user);
+    }
+    return auth;
   } catch {
     return fallback;
   }
@@ -57,7 +63,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [state.jobs]);
 
   useEffect(() => {
-    sessionStorage.setItem(AUTH_KEY, JSON.stringify(state.auth));
+    if (state.auth.isLoggedIn) {
+      sessionStorage.setItem(AUTH_KEY, JSON.stringify(state.auth));
+    } else {
+      sessionStorage.removeItem(AUTH_KEY);
+    }
   }, [state.auth]);
 
   return (

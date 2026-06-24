@@ -37,15 +37,19 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
       };
     case "SET_FILTERED_JOBS":
       return { ...state, filteredJobs: action.payload };
-    case "LOGIN":
+    case "LOGIN": {
+      const username = action.payload.user;
+      const knownRaw = localStorage.getItem("jobTracker_known_users");
+      const known: string[] = knownRaw ? (JSON.parse(knownRaw) as string[]) : [];
       return {
         ...state,
-        auth: { isLoggedIn: true, user: action.payload.user },
+        auth: { isLoggedIn: true, user: username, isReturning: known.includes(username) },
       };
+    }
     case "LOGOUT":
       return {
         ...state,
-        auth: { isLoggedIn: false, user: null },
+        auth: { isLoggedIn: false, user: null, isReturning: false },
         filteredJobs: state.jobs,
       };
     default:
