@@ -25,23 +25,32 @@ function loadJobsFromStorage(): Job[] {
 }
 
 function loadAuthFromStorage(): AuthState {
+  const fallback: AuthState = { isLoggedIn: false, user: null };
   try {
     const raw = sessionStorage.getItem(AUTH_KEY);
-    if (!raw) return { isLoggedIn: false, user: null };
-    return JSON.parse(raw) as AuthState;
+    if (!raw) return fallback;
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      typeof (parsed as Record<string, unknown>).isLoggedIn !== "boolean"
+    ) {
+      return fallback;
+    }
+    return parsed as AuthState;
   } catch {
-    return { isLoggedIn: false, user: null };
+    return fallback;
   }
 }
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+function buildInitialState(): AppState {
+  const jobs = loadJobsFromStorage();
+  const auth = loadAuthFromStorage();
+  return { ...initialState, jobs, filteredJobs: jobs, auth };
+}
 
-  useEffect(() => {
-    const jobs = loadJobsFromStorage();
-    const auth = loadAuthFromStorage();
-    dispatch({ type: "LOAD_STATE", payload: { jobs, filteredJobs: jobs, auth } });
-  }, []);
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(appReducer, undefined, buildInitialState);
 
   useEffect(() => {
     localStorage.setItem(JOBS_KEY, JSON.stringify(state.jobs));

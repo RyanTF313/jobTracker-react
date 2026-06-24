@@ -157,7 +157,6 @@ header {
 #welcome-section {
   text-align: center;
   padding: var(--space-6) 0;
-  display: none;
 }
 
 .card {
@@ -245,7 +244,6 @@ dialog {
   width: 100%;
   text-align: center;
   font-size: 1.25rem;
-  display: none;
   margin: var(--space-3);
 
   input {
@@ -260,7 +258,6 @@ dialog {
 #job-board {
   padding: var(--space-6) 0;
   overflow-x: auto;
-  display: none;
 }
 
 #job-board table {
@@ -362,7 +359,6 @@ dialog {
 ========================= */
 
 #view-nav {
-  display: none;
   justify-content: center;
   gap: var(--space-2);
   padding: var(--space-4) 0 0;
@@ -399,7 +395,6 @@ dialog {
 ========================= */
 
 #analytics-section {
-  display: none;
   padding: var(--space-6) var(--space-6);
   max-width: var(--container-width);
   margin-inline: auto;
