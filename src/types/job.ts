@@ -14,3 +14,11 @@ export type JobStatus =
   | "interviewing"
   | "offer"
   | "rejected";
+
+  export type JobStatusMap = {
+    wishlist: number;
+    applied: number;
+    interviewing: number;
+    rejected: number;
+    offer: number;
+  };

@@ -29,7 +29,7 @@ export const SearchBar = () => {
   return (
     <section id="job-search-form-section">
       <form id="job-search-form" onSubmit={(e) => e.preventDefault()}>
-        <label htmlFor="job-search">Search</label>
+        <label htmlFor="job-search">Search </label>
         <input
           id="job-search"
           name="jobSearch"
