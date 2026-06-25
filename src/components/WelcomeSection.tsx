@@ -1,7 +1,7 @@
 import type { SubmitEvent, MouseEvent } from "react";
 import { useEffect } from "react";
 import { useAppState } from "./../hooks";
-import { WelcomeBar } from "./WelcomeBar";
+import { WelcomeBar } from "./ui/WelcomeBar";
 
 export const WelcomeSection = () => {
   const { state, dispatch } = useAppState();
