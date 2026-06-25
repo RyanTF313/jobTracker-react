@@ -5,6 +5,7 @@ export interface Job {
   status: JobStatus;
   notes: string;
   salary: string;
+  owner: string | null
 };
 
 export type JobStatus =

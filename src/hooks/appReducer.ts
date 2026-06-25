@@ -12,11 +12,11 @@ export type AppAction =
 export const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case "ADD_JOB": {
-      const newJob = { ...action.payload, id: crypto.randomUUID() };
+      const newJob: Job = { ...action.payload, id: crypto.randomUUID() };
       return {
         ...state,
         jobs: [...state.jobs, newJob],
-        filteredJobs: [...state.filteredJobs, newJob],
+        filteredJobs: [...state.jobs, newJob],
       };
     }
     case "REMOVE_JOB":
@@ -40,10 +40,16 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
     case "LOGIN": {
       const username = action.payload.user;
       const knownRaw = localStorage.getItem("jobTracker_known_users");
-      const known: string[] = knownRaw ? (JSON.parse(knownRaw) as string[]) : [];
+      const known: string[] = knownRaw
+        ? (JSON.parse(knownRaw) as string[])
+        : [];
       return {
         ...state,
-        auth: { isLoggedIn: true, user: username, isReturning: known.includes(username) },
+        auth: {
+          isLoggedIn: true,
+          user: username,
+          isReturning: known.includes(username),
+        },
       };
     }
     case "LOGOUT":
