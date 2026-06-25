@@ -9,32 +9,42 @@ export type AppAction =
   | { type: "LOGIN"; payload: { user: string } }
   | { type: "LOGOUT" };
 
+const ownerJobs = (jobs: Job[], user: string | null): Job[] =>
+  user ? jobs.filter((j) => j.owner === user) : [];
+
 export const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case "ADD_JOB": {
       const newJob: Job = { ...action.payload, id: crypto.randomUUID() };
+      const updatedJobs = [...state.jobs, newJob];
       return {
         ...state,
-        jobs: [...state.jobs, newJob],
-        filteredJobs: [...state.jobs, newJob],
+        jobs: updatedJobs,
+        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
       };
     }
-    case "REMOVE_JOB":
+    case "REMOVE_JOB": {
+      const updatedJobs = state.jobs.filter(
+        (j) => !(j.id === action.payload && j.owner === state.auth.user),
+      );
       return {
         ...state,
-        jobs: state.jobs.filter((j) => j.id !== action.payload),
-        filteredJobs: state.filteredJobs.filter((j) => j.id !== action.payload),
+        jobs: updatedJobs,
+        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
       };
-    case "UPDATE_JOB":
+    }
+    case "UPDATE_JOB": {
+      const updatedJobs = state.jobs.map((j) =>
+        j.id === action.payload.id && j.owner === state.auth.user
+          ? action.payload
+          : j,
+      );
       return {
         ...state,
-        jobs: state.jobs.map((j) =>
-          j.id === action.payload.id ? action.payload : j,
-        ),
-        filteredJobs: state.filteredJobs.map((j) =>
-          j.id === action.payload.id ? action.payload : j,
-        ),
+        jobs: updatedJobs,
+        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
       };
+    }
     case "SET_FILTERED_JOBS":
       return { ...state, filteredJobs: action.payload };
     case "LOGIN": {
@@ -45,6 +55,7 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
         : [];
       return {
         ...state,
+        filteredJobs: ownerJobs(state.jobs, username),
         auth: {
           isLoggedIn: true,
           user: username,
@@ -56,7 +67,7 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         auth: { isLoggedIn: false, user: null, isReturning: false },
-        filteredJobs: state.jobs,
+        filteredJobs: [],
       };
     default:
       return state;
