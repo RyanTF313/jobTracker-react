@@ -52,7 +52,11 @@ function loadAuthFromStorage(): AuthState {
 function buildInitialState(): AppState {
   const jobs = loadJobsFromStorage();
   const auth = loadAuthFromStorage();
-  return { ...initialState, jobs, filteredJobs: jobs, auth };
+  const filteredJobs =
+    auth.isLoggedIn && auth.user
+      ? jobs.filter((j) => j.owner === auth.user)
+      : [];
+  return { ...initialState, jobs, filteredJobs, auth };
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
