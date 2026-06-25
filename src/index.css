@@ -251,6 +251,12 @@ dialog {
   }
 }
 
+#logout-form {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 /* =========================
    KANBAN BOARD
 ========================= */
@@ -359,6 +365,7 @@ dialog {
 ========================= */
 
 #view-nav {
+  display: flex;
   justify-content: center;
   gap: var(--space-2);
   padding: var(--space-4) 0 0;
@@ -491,11 +498,21 @@ dialog {
   transition: height var(--transition-normal);
 }
 
-.bar--wishlist  { background: var(--status-saved); }
-.bar--applied   { background: var(--status-applied); }
-.bar--interviewing { background: var(--status-interview); }
-.bar--offer     { background: var(--status-offer); }
-.bar--rejected  { background: var(--status-rejected); }
+.bar--wishlist {
+  background: var(--status-saved);
+}
+.bar--applied {
+  background: var(--status-applied);
+}
+.bar--interviewing {
+  background: var(--status-interview);
+}
+.bar--offer {
+  background: var(--status-offer);
+}
+.bar--rejected {
+  background: var(--status-rejected);
+}
 
 .bar-label {
   margin-top: var(--space-2);
