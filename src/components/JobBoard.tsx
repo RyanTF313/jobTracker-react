@@ -1,16 +1,24 @@
-import type { MouseEvent } from "react";
+import { type MouseEvent, useState } from "react";
 import { EmptyColoumnCard, JobCard } from "./ui";
+import { CreateJobModal } from "./forms";
 import { COLUMNS, COLUMN_LABELS } from "./../constants";
 import { useAppState } from "@hooks/useAppState";
-import type { Job } from "src/types";
+import type { Job, JobStatus } from "src/types";
 
 export const JobBoard = () => {
+  const [modalOpen, setModalopen] = useState<boolean>(false);
+  const [currentCol, setCurrentCol] = useState<JobStatus>("wishlist");
   const {
     state: { filteredJobs },
   } = useAppState();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    console.log("open add modal: ", event.currentTarget.dataset["column"]);
+    const col = event.currentTarget.dataset["column"] as JobStatus | undefined;
+
+    if (!col) return;
+
+    setCurrentCol(col);
+    setModalopen(true);
   };
 
   const columns = COLUMNS.map((column) => {
@@ -33,13 +41,22 @@ export const JobBoard = () => {
 
   return (
     <>
+      {modalOpen && (
+        <CreateJobModal
+          key={currentCol}
+          column={currentCol}
+          closeModal={() => setModalopen(false)}
+        />
+      )}
       <section id="job-board">
         <table>
           <thead>
             <tr>{columns}</tr>
           </thead>
           <tbody id="job-board-body">
-            {filteredJobs.map((job: Job) => <JobCard job={job} />)}
+            {filteredJobs.map((job: Job) => (
+              <JobCard job={job} key={job.id} />
+            ))}
             <tr>
               {COLUMNS.map((column) => (
                 <td key={column}>
