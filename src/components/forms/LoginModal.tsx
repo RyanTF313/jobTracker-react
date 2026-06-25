@@ -1,6 +1,6 @@
 import type { ChangeEvent, SubmitEvent } from "react";
 import { useState } from "react";
-import { useAppState } from "./../hooks";
+import { useAppState } from "@hooks/useAppState";
 
 export const LoginModal = () => {
   const [inputValue, setInputValue] = useState<string>("");

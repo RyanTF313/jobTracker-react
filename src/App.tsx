@@ -1,6 +1,8 @@
 import "./App.css";
 import { useAppState } from "./hooks";
-import { Header, LoginModal, Main } from "./components/";
+import { Main } from "./components/";
+import { Header } from "./components/ui";
+import { LoginModal } from "./components/forms";
 
 function App() {
   const { state } = useAppState();

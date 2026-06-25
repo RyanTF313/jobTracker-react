@@ -1,3 +1,4 @@
+import { JobBoard } from "./JobBoard";
 import { WelcomeSection } from "./WelcomeSection";
 
 export const Main = () => {
@@ -26,49 +27,7 @@ export const Main = () => {
             />
           </form>
         </section>
-
-        <section id="job-board">
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  <p>Wishlist</p>
-                  <button className="btn table-column" data-column="wishlist">
-                    +
-                  </button>
-                </th>
-                <th>
-                  <p>Applied</p>
-                  <button className="btn table-column" data-column="applied">
-                    +
-                  </button>
-                </th>
-                <th>
-                  <p>Interviewing</p>
-                  <button
-                    className="btn table-column"
-                    data-column="interviewing"
-                  >
-                    +
-                  </button>
-                </th>
-                <th>
-                  <p>Offer</p>
-                  <button className="btn table-column" data-column="offer">
-                    +
-                  </button>
-                </th>
-                <th>
-                  <p>Rejected</p>
-                  <button className="btn table-column" data-column="rejected">
-                    +
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="job-board-body"></tbody>
-          </table>
-        </section>
+        <JobBoard />
 
         <section id="analytics-section"></section>
       </div>
