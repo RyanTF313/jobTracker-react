@@ -1,8 +1,9 @@
 import "./App.css";
-import { useAppState } from "./hooks";
+import { useAppState, ModalProvider } from "./hooks";
 import { Main } from "./components/";
 import { Header } from "./components/ui";
 import { LoginModal } from "./components/forms";
+import { ModalRenderer } from "./components/ModalRenderer";
 
 function App() {
   const { state } = useAppState();
@@ -21,7 +22,12 @@ function App() {
     </>
   );
 
-  return auth.isLoggedIn ? renderHomePage() : renderLoginPage();
+  return (
+    <ModalProvider>
+      <ModalRenderer />
+      {auth.isLoggedIn ? renderHomePage() : renderLoginPage()}
+    </ModalProvider>
+  );
 }
 
 export default App;

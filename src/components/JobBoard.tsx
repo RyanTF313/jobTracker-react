@@ -1,24 +1,20 @@
-import { type MouseEvent, useState } from "react";
+import { type MouseEvent } from "react";
 import { EmptyColoumnCard, JobCard } from "./ui";
-import { CreateJobModal } from "./forms";
 import { COLUMNS, COLUMN_LABELS } from "./../constants";
 import { useAppState } from "@hooks/useAppState";
+import { useModal } from "@hooks/useModal";
 import type { Job, JobStatus } from "src/types";
 
 export const JobBoard = () => {
-  const [modalOpen, setModalopen] = useState<boolean>(false);
-  const [currentCol, setCurrentCol] = useState<JobStatus>("wishlist");
+  const { openModal } = useModal();
   const {
     state: { filteredJobs },
   } = useAppState();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
     const col = event.currentTarget.dataset["column"] as JobStatus | undefined;
-
     if (!col) return;
-
-    setCurrentCol(col);
-    setModalopen(true);
+    openModal({ type: "create", column: col });
   };
 
   const columns = COLUMNS.map((column) => {
@@ -40,33 +36,24 @@ export const JobBoard = () => {
   const emptyStatuses = COLUMNS.filter((s) => !occupiedStatuses.has(s));
 
   return (
-    <>
-      {modalOpen && (
-        <CreateJobModal
-          key={currentCol}
-          column={currentCol}
-          closeModal={() => setModalopen(false)}
-        />
-      )}
-      <section id="job-board">
-        <table>
-          <thead>
-            <tr>{columns}</tr>
-          </thead>
-          <tbody id="job-board-body">
-            {filteredJobs.map((job: Job) => (
-              <JobCard job={job} key={job.id} />
+    <section id="job-board">
+      <table>
+        <thead>
+          <tr>{columns}</tr>
+        </thead>
+        <tbody id="job-board-body">
+          {filteredJobs.map((job: Job) => (
+            <JobCard job={job} key={job.id} />
+          ))}
+          <tr>
+            {COLUMNS.map((column) => (
+              <td key={column}>
+                {emptyStatuses.includes(column) && <EmptyColoumnCard />}
+              </td>
             ))}
-            <tr>
-              {COLUMNS.map((column) => (
-                <td key={column}>
-                  {emptyStatuses.includes(column) && <EmptyColoumnCard />}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   );
 };
