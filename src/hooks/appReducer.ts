@@ -6,6 +6,7 @@ export type AppAction =
   | { type: "REMOVE_JOB"; payload: string }
   | { type: "UPDATE_JOB"; payload: Job }
   | { type: "SET_FILTERED_JOBS"; payload: Job[] }
+  | { type: "CLEAR_JOBS" }
   | { type: "LOGIN"; payload: { user: string } }
   | { type: "LOGOUT" };
 
@@ -47,6 +48,8 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
     }
     case "SET_FILTERED_JOBS":
       return { ...state, filteredJobs: action.payload };
+    case "CLEAR_JOBS":
+      return { ...state, jobs: [], filteredJobs: [] };
     case "LOGIN": {
       const username = action.payload.user;
       const knownRaw = localStorage.getItem("jobTracker_known_users");

@@ -1,7 +1,9 @@
-import type { SubmitEvent, MouseEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useEffect } from "react";
 import { useAppState } from "./../hooks";
 import { WelcomeBar } from "./ui/WelcomeBar";
+
+const JOBS_KEY = "jobTracker_jobs";
 
 export const WelcomeSection = () => {
   const { state, dispatch } = useAppState();
@@ -23,8 +25,12 @@ export const WelcomeSection = () => {
     logout();
   };
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    console.log(event);
+  const handleClearData = (): void => {
+    if (!confirm("This will permanently delete all your job data. Continue?")) {
+      return;
+    }
+    localStorage.removeItem(JOBS_KEY);
+    dispatch({ type: "CLEAR_JOBS" });
   };
 
   return (
@@ -39,7 +45,7 @@ export const WelcomeSection = () => {
             type="button"
             id="clear-storage-button"
             className="btn danger"
-            onClick={handleClick}
+            onClick={handleClearData}
           >
             Clear Data
           </button>
