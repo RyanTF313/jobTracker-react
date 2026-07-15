@@ -3,13 +3,13 @@ import { EmptyColoumnCard, JobCard } from "./ui";
 import { COLUMNS, COLUMN_LABELS } from "./../constants";
 import { useAppState } from "@hooks/useAppState";
 import { useModal } from "@hooks/useModal";
+import { selectVisibleJobs } from "@hooks/appReducer";
 import type { Job, JobStatus } from "src/types";
 
 export const JobBoard = () => {
   const { openModal } = useModal();
-  const {
-    state: { filteredJobs },
-  } = useAppState();
+  const { state } = useAppState();
+  const visibleJobs = selectVisibleJobs(state);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
     const col = event.currentTarget.dataset["column"] as JobStatus | undefined;
@@ -32,7 +32,7 @@ export const JobBoard = () => {
     );
   });
 
-  const occupiedStatuses = new Set(filteredJobs.map((j: Job) => j.status));
+  const occupiedStatuses = new Set(visibleJobs.map((j: Job) => j.status));
   const emptyStatuses = COLUMNS.filter((s) => !occupiedStatuses.has(s));
 
   return (
@@ -42,7 +42,7 @@ export const JobBoard = () => {
           <tr>{columns}</tr>
         </thead>
         <tbody id="job-board-body">
-          {filteredJobs.map((job: Job) => (
+          {visibleJobs.map((job: Job) => (
             <JobCard job={job} key={job.id} />
           ))}
           <tr>

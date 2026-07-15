@@ -6,12 +6,13 @@ import { WelcomeSection } from "./WelcomeSection";
 import { SearchBar } from "./ui";
 import type { View } from "src/types";
 import { useAppState } from "@hooks/useAppState";
+import { ownerJobs } from "@hooks/appReducer";
 
 export const Main = () => {
   const [activeView, setActiveView] = useState<View>("board");
-  const {
-    state: { filteredJobs },
-  } = useAppState();
+  const { state } = useAppState();
+  const ownedJobs = ownerJobs(state.jobs, state.auth.user);
+
   return (
     <>
       <div className="container">
@@ -20,7 +21,7 @@ export const Main = () => {
         {activeView === "board" && <SearchBar />}
         {activeView === "board" && <JobBoard />}
 
-        {activeView === "analytics" && <AnalyticsView jobs={filteredJobs} />}
+        {activeView === "analytics" && <AnalyticsView jobs={ownedJobs} />}
       </div>
     </>
   );

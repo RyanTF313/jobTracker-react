@@ -85,10 +85,10 @@ export const EditJobModal = ({ job }: EditJobModalProps) => {
         </select>
         <label htmlFor="edit-salary">Salary:</label>
         <input
-          type="text"
+          type="number"
           id="edit-salary"
           name="salary"
-          required
+          step="1000"
           onChange={handleChange}
           value={salary}
         />

@@ -63,6 +63,6 @@ src/
 
 ## Architecture Notes
 
-State lives in a single `AppState` tree (`jobs`, `filteredJobs`, `auth`) managed by `appReducer`. All mutations go through typed `AppAction` dispatches — no direct state writes anywhere. `filteredJobs` is always derived from `jobs` inside the reducer, so filtering and auth-scoping are applied consistently on every action.
+State lives in a single `AppState` tree (`jobs`, `searchQuery`, `auth`) managed by `appReducer`. Visible jobs are derived via `selectVisibleJobs` from the current user and search query (not stored separately). All mutations go through typed `AppAction` dispatches — no direct state writes anywhere.
 
-Jobs are scoped by `owner` (the logged-in username), so multiple users can share the same `localStorage` bucket without seeing each other's data.
+Jobs are scoped by `owner` (the logged-in username), so multiple users can share the same `localStorage` bucket without seeing each other's data. Clear Data only removes the current user's jobs.

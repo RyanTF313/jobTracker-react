@@ -1,12 +1,11 @@
 import type { ChangeEvent, SubmitEvent } from "react";
 import { useState } from "react";
 import { useAppState } from "@hooks/useAppState";
+import { readKnownUsers, rememberKnownUser } from "@hooks/knownUsers";
 
 export const LoginModal = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const { dispatch } = useAppState();
-  const login = () =>
-    dispatch({ type: "LOGIN", payload: { user: inputValue } });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setInputValue(event.target.value);
@@ -14,15 +13,16 @@ export const LoginModal = () => {
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    login();
+    const user = inputValue.trim();
+    if (!user) return;
+    const isReturning = readKnownUsers().includes(user);
+    rememberKnownUser(user);
+    dispatch({ type: "LOGIN", payload: { user, isReturning } });
   };
-  
+
   return (
     <div>
-      <dialog
-        id="login-modal"
-        open
-      >
+      <dialog id="login-modal" open>
         <form id="login-form" onSubmit={handleSubmit}>
           <h2>Login</h2>
           <label htmlFor="username">Username:</label>

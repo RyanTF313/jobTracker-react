@@ -5,72 +5,82 @@ export type AppAction =
   | { type: "ADD_JOB"; payload: Omit<Job, "id"> }
   | { type: "REMOVE_JOB"; payload: string }
   | { type: "UPDATE_JOB"; payload: Job }
-  | { type: "SET_FILTERED_JOBS"; payload: Job[] }
-  | { type: "CLEAR_JOBS" }
-  | { type: "LOGIN"; payload: { user: string } }
+  | { type: "SET_SEARCH_QUERY"; payload: string }
+  | { type: "CLEAR_CURRENT_USER_JOBS" }
+  | {
+      type: "LOGIN";
+      payload: { user: string; isReturning: boolean };
+    }
   | { type: "LOGOUT" };
 
-const ownerJobs = (jobs: Job[], user: string | null): Job[] =>
+export const ownerJobs = (jobs: Job[], user: string | null): Job[] =>
   user ? jobs.filter((j) => j.owner === user) : [];
+
+export const filterJobs = (jobs: Job[], query: string): Job[] => {
+  const term = query.trim().toLowerCase();
+  if (!term) return jobs;
+  return jobs.filter(
+    (job) =>
+      (typeof job.company === "string" &&
+        job.company.toLowerCase().includes(term)) ||
+      (typeof job.position === "string" &&
+        job.position.toLowerCase().includes(term)),
+  );
+};
+
+export const selectVisibleJobs = (state: AppState): Job[] =>
+  filterJobs(ownerJobs(state.jobs, state.auth.user), state.searchQuery);
 
 export const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case "ADD_JOB": {
       const newJob: Job = { ...action.payload, id: crypto.randomUUID() };
-      const updatedJobs = [...state.jobs, newJob];
       return {
         ...state,
-        jobs: updatedJobs,
-        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
+        jobs: [...state.jobs, newJob],
       };
     }
     case "REMOVE_JOB": {
-      const updatedJobs = state.jobs.filter(
-        (j) => !(j.id === action.payload && j.owner === state.auth.user),
-      );
       return {
         ...state,
-        jobs: updatedJobs,
-        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
+        jobs: state.jobs.filter(
+          (j) => !(j.id === action.payload && j.owner === state.auth.user),
+        ),
       };
     }
     case "UPDATE_JOB": {
-      const updatedJobs = state.jobs.map((j) =>
-        j.id === action.payload.id && j.owner === state.auth.user
-          ? action.payload
-          : j,
-      );
       return {
         ...state,
-        jobs: updatedJobs,
-        filteredJobs: ownerJobs(updatedJobs, state.auth.user),
+        jobs: state.jobs.map((j) =>
+          j.id === action.payload.id && j.owner === state.auth.user
+            ? { ...action.payload, owner: j.owner, id: j.id }
+            : j,
+        ),
       };
     }
-    case "SET_FILTERED_JOBS":
-      return { ...state, filteredJobs: action.payload };
-    case "CLEAR_JOBS":
-      return { ...state, jobs: [], filteredJobs: [] };
-    case "LOGIN": {
-      const username = action.payload.user;
-      const knownRaw = localStorage.getItem("jobTracker_known_users");
-      const known: string[] = knownRaw
-        ? (JSON.parse(knownRaw) as string[])
-        : [];
+    case "SET_SEARCH_QUERY":
+      return { ...state, searchQuery: action.payload };
+    case "CLEAR_CURRENT_USER_JOBS":
       return {
         ...state,
-        filteredJobs: ownerJobs(state.jobs, username),
+        jobs: state.jobs.filter((j) => j.owner !== state.auth.user),
+        searchQuery: "",
+      };
+    case "LOGIN":
+      return {
+        ...state,
+        searchQuery: "",
         auth: {
           isLoggedIn: true,
-          user: username,
-          isReturning: known.includes(username),
+          user: action.payload.user,
+          isReturning: action.payload.isReturning,
         },
       };
-    }
     case "LOGOUT":
       return {
         ...state,
+        searchQuery: "",
         auth: { isLoggedIn: false, user: null, isReturning: false },
-        filteredJobs: [],
       };
     default:
       return state;

@@ -1,29 +1,11 @@
-import { useState, type ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { useAppState } from "@hooks/useAppState";
-import type { Job } from "src/types";
 
 export const SearchBar = () => {
   const { state, dispatch } = useAppState();
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-
-    const myJobs = state.jobs.filter((j) => j.owner === state.auth.user);
-    if (!term) {
-      dispatch({ type: "SET_FILTERED_JOBS", payload: myJobs });
-    } else {
-      const lower = term.toLowerCase();
-      dispatch({
-        type: "SET_FILTERED_JOBS",
-        payload: myJobs.filter(
-          (job: Job) =>
-            job.company.toLowerCase().includes(lower) ||
-            job.position.toLowerCase().includes(lower),
-        ),
-      });
-    }
+    dispatch({ type: "SET_SEARCH_QUERY", payload: event.target.value });
   };
 
   return (
@@ -34,7 +16,7 @@ export const SearchBar = () => {
           id="job-search"
           name="jobSearch"
           type="search"
-          value={searchTerm}
+          value={state.searchQuery}
           onChange={handleChange}
         />
       </form>
